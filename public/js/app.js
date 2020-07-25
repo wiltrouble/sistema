@@ -49331,7 +49331,7 @@ exports = module.exports = __webpack_require__(42)(false);
 
 
 // module
-exports.push([module.i, "\n.modal-content{\n    width: 100% !important;\n    position: absolute !important\n    ;\n}\n.show{\n    display: list-item !important;\n    opacity: 1 !important;\n    position: absolute !important;\n    background-color: #3c29297a !important;\n}\n", ""]);
+exports.push([module.i, "\n.modal-content{\n    width: 100% !important;\n    position: absolute !important\n    ;\n}\n.show{\n    display: list-item !important;\n    opacity: 1 !important;\n    position: absolute !important;\n    background-color: #3c29297a !important;\n}\n.div-error{\n    display: flex;\n    justify-content: center;\n}\n.text-error {\n    color: red !important;\n    font-weight: bold;\n}\n", ""]);
 
 // exports
 
@@ -49948,6 +49948,11 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     data: function data() {
@@ -49957,7 +49962,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             arrayCategory: [],
             modal: 0,
             titleModal: '',
-            typeAction: 0
+            typeAction: 0,
+            errorCategory: 0,
+            errorShowMsgCategory: []
         };
     },
 
@@ -49971,6 +49978,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             });
         },
         registerCategory: function registerCategory() {
+            if (this.validateCategory()) {
+                return;
+            }
+
             var me = this;
             axios.post('/category/register', {
                 'name': this.name,
@@ -49981,6 +49992,20 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             }).catch(function (error) {
                 console.log(error);
             });
+        },
+        validateCategory: function validateCategory() {
+            this.errorCategory = 0;
+            this.errorShowMsgCategory = [];
+
+            if (!this.name) {
+                this.errorShowMsgCategory.push("The name of category is empty");
+            }
+
+            if (this.errorShowMsgCategory.length) {
+                this.errorCategory = 1;
+            }
+
+            return this.errorCategory;
         },
         closeModal: function closeModal() {
             this.modal = 0;
@@ -50212,11 +50237,7 @@ var render = function() {
                               _vm.name = $event.target.value
                             }
                           }
-                        }),
-                        _vm._v(" "),
-                        _c("span", { staticClass: "help-block" }, [
-                          _vm._v("(*) Ingrese el nombre de la categoría")
-                        ])
+                        })
                       ])
                     ]),
                     _vm._v(" "),
@@ -50256,7 +50277,35 @@ var render = function() {
                           }
                         })
                       ])
-                    ])
+                    ]),
+                    _vm._v(" "),
+                    _c(
+                      "div",
+                      {
+                        directives: [
+                          {
+                            name: "show",
+                            rawName: "v-show",
+                            value: _vm.errorCategory,
+                            expression: "errorCategory"
+                          }
+                        ],
+                        staticClass: "form-group-row div-error"
+                      },
+                      [
+                        _c(
+                          "div",
+                          { staticClass: "text-center text-error" },
+                          _vm._l(_vm.errorShowMsgCategory, function(error) {
+                            return _c("div", {
+                              key: error,
+                              domProps: { textContent: _vm._s(error) }
+                            })
+                          }),
+                          0
+                        )
+                      ]
+                    )
                   ]
                 )
               ]),

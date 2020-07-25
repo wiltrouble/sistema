@@ -104,13 +104,18 @@
                                     <label class="col-md-3 form-control-label" for="text-input">Nombre</label>
                                     <div class="col-md-9">
                                         <input type="text" v-model="name" class="form-control" placeholder="Nombre de categoría">
-                                        <span class="help-block">(*) Ingrese el nombre de la categoría</span>
+                                        
                                     </div>
                                 </div>
                                 <div class="form-group row">
                                     <label class="col-md-3 form-control-label" for="email-input">Descripción</label>
                                     <div class="col-md-9">
                                         <input type="email" v-model="description" class="form-control" placeholder="Enter description">
+                                    </div>
+                                </div>
+                                <div v-show="errorCategory" class="form-group-row div-error">
+                                    <div class="text-center text-error">
+                                        <div v-for="error in errorShowMsgCategory" :key="error" v-text="error"></div>
                                     </div>
                                 </div>
                             </form>
@@ -161,7 +166,9 @@
                 arrayCategory: [],
                 modal: 0,
                 titleModal: '',
-                typeAction: 0
+                typeAction: 0,
+                errorCategory: 0,
+                errorShowMsgCategory: []
             }
         },
         methods: {
@@ -175,6 +182,10 @@
                 });
             },
             registerCategory() {
+                if (this.validateCategory()) {
+                    return;
+                }
+
                 let me = this;
                 axios.post('/category/register', {
                     'name': this.name,
@@ -185,6 +196,20 @@
                 }).catch(function(error){
                     console.log(error)
                 })
+            },
+            validateCategory() {
+                this.errorCategory = 0;
+                this.errorShowMsgCategory = [];
+
+                if (!this.name) {
+                    this.errorShowMsgCategory.push("The name of category is empty");
+                }
+
+                if (this.errorShowMsgCategory.length) {
+                    this.errorCategory = 1;
+                }
+
+                return this.errorCategory;
             },
             closeModal() {
                 this.modal = 0;
@@ -230,5 +255,13 @@
         opacity: 1 !important;
         position: absolute !important;
         background-color: #3c29297a !important;
+    }
+    .div-error{
+        display: flex;
+        justify-content: center;
+    }
+    .text-error {
+        color: red !important;
+        font-weight: bold;
     }
 </style>
