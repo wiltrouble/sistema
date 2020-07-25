@@ -49972,7 +49972,15 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         },
         registerCategory: function registerCategory() {
             var me = this;
-            axios.get;
+            axios.post('/category/register', {
+                'name': this.name,
+                'description': this.description
+            }).then(function (response) {
+                me.closeModal();
+                me.listCategory();
+            }).catch(function (error) {
+                console.log(error);
+            });
         },
         closeModal: function closeModal() {
             this.modal = 0;
@@ -50233,7 +50241,10 @@ var render = function() {
                             }
                           ],
                           staticClass: "form-control",
-                          attrs: { type: "email", placeholder: "Enter Email" },
+                          attrs: {
+                            type: "email",
+                            placeholder: "Enter description"
+                          },
                           domProps: { value: _vm.description },
                           on: {
                             input: function($event) {
@@ -50270,7 +50281,12 @@ var render = function() {
                       "button",
                       {
                         staticClass: "btn btn-primary",
-                        attrs: { type: "button" }
+                        attrs: { type: "button" },
+                        on: {
+                          click: function($event) {
+                            return _vm.registerCategory()
+                          }
+                        }
                       },
                       [_vm._v("Save")]
                     )

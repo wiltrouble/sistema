@@ -110,14 +110,14 @@
                                 <div class="form-group row">
                                     <label class="col-md-3 form-control-label" for="email-input">Descripción</label>
                                     <div class="col-md-9">
-                                        <input type="email" v-model="description" class="form-control" placeholder="Enter Email">
+                                        <input type="email" v-model="description" class="form-control" placeholder="Enter description">
                                     </div>
                                 </div>
                             </form>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" @click="closeModal()"">Cerrar</button>
-                            <button type="button" v-if="typeAction==1" class="btn btn-primary">Save</button>
+                            <button type="button" class="btn btn-secondary" @click="closeModal()">Cerrar</button>
+                            <button type="button" v-if="typeAction==1" class="btn btn-primary" @click="registerCategory()">Save</button>
                             <button type="button" v-if="typeAction==2" class="btn btn-primary">Update</button>
                         </div>
                     </div>
@@ -167,7 +167,7 @@
         methods: {
             listCategory() {
                 let me = this;
-                axios.get('/category').then(function (response) {
+                axios.get('/category').then(function(response) {
                     me.arrayCategory = response.data;
                 })
                 .catch(function (error) {
@@ -176,7 +176,15 @@
             },
             registerCategory() {
                 let me = this;
-                axios.get
+                axios.post('/category/register', {
+                    'name': this.name,
+                    'description': this.description
+                }).then(function(response){
+                    me.closeModal();
+                    me.listCategory();
+                }).catch(function(error){
+                    console.log(error)
+                })
             },
             closeModal() {
                 this.modal = 0;
@@ -210,6 +218,7 @@
         }
     }
 </script>
+
 <style>
     .modal-content{
         width: 100% !important;
