@@ -43,9 +43,16 @@
                                         <button type="button" @click="openModal('category', 'update', category) " class="btn btn-warning btn-sm">
                                           <i class="icon-pencil"></i>
                                         </button> &nbsp;
-                                        <button type="button" class="btn btn-danger btn-sm">
-                                          <i class="icon-trash"></i>
-                                        </button>
+                                        <template v-if="category.condition">
+                                            <button type="button" class="btn btn-danger btn-sm" @click="deactivateCategory(category.id)">
+                                                <i class="icon-trash"></i>
+                                            </button>
+                                        </template>
+                                        <template v-else>
+                                            <button type="button" class="btn btn-info btn-sm" @click="activateCategory(category.id)">
+                                                <i class="icon-check"></i>
+                                            </button>
+                                        </template>
                                     </td>
                                     <td v-text="category.name"></td>
                                     <td v-text="category.description"></td>
@@ -131,29 +138,6 @@
                 <!-- /.modal-dialog -->
             </div>
             <!--Fin del modal-->
-            <!-- Inicio del modal Eliminar -->
-            <div class="modal fade" id="modalEliminar" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" style="display: none;" aria-hidden="true">
-                <div class="modal-dialog modal-danger" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h4 class="modal-title">Eliminar Categoría</h4>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                              <span aria-hidden="true">×</span>
-                            </button>
-                        </div>
-                        <div class="modal-body">
-                            <p>Estas seguro de eliminar la categoría?</p>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-                            <button type="button" class="btn btn-danger">Eliminar</button>
-                        </div>
-                    </div>
-                    <!-- /.modal-content -->
-                </div>
-                <!-- /.modal-dialog -->
-            </div>
-            <!-- Fin del modal Eliminar -->
         </main>
 </template>
 
@@ -228,6 +212,90 @@
                 }
 
                 return this.errorCategory;
+            },
+            deactivateCategory(id) {
+                const swalWithBootstrapButtons = Swal.mixin({
+                customClass: {
+                    confirmButton: 'btn btn-success',
+                    cancelButton: 'btn btn-danger'
+                },
+                buttonsStyling: false
+                })
+
+                swalWithBootstrapButtons.fire({
+                title: 'Are you sure?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, delete it!',
+                cancelButtonText: 'No, cancel!',
+                reverseButtons: true
+                }).then((result) => {
+                if (result.value) {
+
+                    let me = this;
+                    axios.put('/category/deactivate', {
+                        'id': id
+                    }).then(function(response){
+                        me.listCategory();
+
+                        swalWithBootstrapButtons.fire(
+                        'Deleted!',
+                        'Your register has been deactivate.',
+                        'success'
+                        )
+                    }).catch(function(error){
+                        console.log(error)
+                    })
+
+                } else if (
+                    /* Read more about handling dismissals below */
+                    result.dismiss === Swal.DismissReason.cancel
+                ) {
+
+                }
+                })
+            },
+            activateCategory(id) {
+                const swalWithBootstrapButtons = Swal.mixin({
+                customClass: {
+                    confirmButton: 'btn btn-success',
+                    cancelButton: 'btn btn-danger'
+                },
+                buttonsStyling: false
+                })
+
+                swalWithBootstrapButtons.fire({
+                title: 'Are you sure?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, activate it!',
+                cancelButtonText: 'No, cancel!',
+                reverseButtons: true
+                }).then((result) => {
+                if (result.value) {
+
+                    let me = this;
+                    axios.put('/category/activate', {
+                        'id': id
+                    }).then(function(response){
+                        me.listCategory();
+
+                        swalWithBootstrapButtons.fire(
+                        'Actived!',
+                        'Your register has been actived.',
+                        'success'
+                        )
+                    }).catch(function(error){
+                        console.log(error)
+                    })
+
+                } else if (
+                    /* Read more about handling dismissals below */
+                    result.dismiss === Swal.DismissReason.cancel
+                ) {
+
+                }
+                })
             },
             closeModal() {
                 this.modal = 0;
