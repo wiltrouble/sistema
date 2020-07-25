@@ -123,7 +123,7 @@
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" @click="closeModal()">Cerrar</button>
                             <button type="button" v-if="typeAction==1" class="btn btn-primary" @click="registerCategory()">Save</button>
-                            <button type="button" v-if="typeAction==2" class="btn btn-primary">Update</button>
+                            <button type="button" v-if="typeAction==2" class="btn btn-primary" @click="updateCategory()">Update</button>
                         </div>
                     </div>
                     <!-- /.modal-content -->
@@ -168,7 +168,8 @@
                 titleModal: '',
                 typeAction: 0,
                 errorCategory: 0,
-                errorShowMsgCategory: []
+                errorShowMsgCategory: [],
+                category_id: 0
             }
         },
         methods: {
@@ -190,6 +191,23 @@
                 axios.post('/category/register', {
                     'name': this.name,
                     'description': this.description
+                }).then(function(response){
+                    me.closeModal();
+                    me.listCategory();
+                }).catch(function(error){
+                    console.log(error)
+                })
+            },
+            updateCategory() {
+                if (this.validateCategory()) {
+                    return;
+                }
+
+                let me = this;
+                axios.put('/category/update', {
+                    'name': this.name,
+                    'description': this.description,
+                    'id': this.category_id
                 }).then(function(response){
                     me.closeModal();
                     me.listCategory();
@@ -231,7 +249,13 @@
                             }
 
                             case 'update': {
-
+                                this.category_id = data['id'];
+                                this.modal = 1;
+                                this.titleModal = "Update catecory";
+                                this.typeAction=2;
+                                this.name = data['name'];
+                                this.description = data['description'];
+                                break;
                             }
                         }
                     }

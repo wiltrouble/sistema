@@ -49964,7 +49964,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             titleModal: '',
             typeAction: 0,
             errorCategory: 0,
-            errorShowMsgCategory: []
+            errorShowMsgCategory: [],
+            category_id: 0
         };
     },
 
@@ -49986,6 +49987,23 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             axios.post('/category/register', {
                 'name': this.name,
                 'description': this.description
+            }).then(function (response) {
+                me.closeModal();
+                me.listCategory();
+            }).catch(function (error) {
+                console.log(error);
+            });
+        },
+        updateCategory: function updateCategory() {
+            if (this.validateCategory()) {
+                return;
+            }
+
+            var me = this;
+            axios.put('/category/update', {
+                'name': this.name,
+                'description': this.description,
+                'id': this.category_id
             }).then(function (response) {
                 me.closeModal();
                 me.listCategory();
@@ -50031,7 +50049,15 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                                 }
 
                             case 'update':
-                                {}
+                                {
+                                    this.category_id = data['id'];
+                                    this.modal = 1;
+                                    this.titleModal = "Update catecory";
+                                    this.typeAction = 2;
+                                    this.name = data['name'];
+                                    this.description = data['description'];
+                                    break;
+                                }
                         }
                     }
             }
@@ -50346,7 +50372,12 @@ var render = function() {
                       "button",
                       {
                         staticClass: "btn btn-primary",
-                        attrs: { type: "button" }
+                        attrs: { type: "button" },
+                        on: {
+                          click: function($event) {
+                            return _vm.updateCategory()
+                          }
+                        }
                       },
                       [_vm._v("Update")]
                     )
