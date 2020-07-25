@@ -19,12 +19,12 @@
                         <div class="form-group row">
                             <div class="col-md-6">
                                 <div class="input-group">
-                                    <select class="form-control col-md-3" id="opcion" name="opcion">
-                                      <option value="nombre">Nombre</option>
-                                      <option value="descripcion">Descripción</option>
+                                    <select class="form-control col-md-3" v-model="criteria">
+                                      <option value="name">Name</option>
+                                      <option value="description">Description</option>
                                     </select>
-                                    <input type="text" id="texto" name="texto" class="form-control" placeholder="Texto a buscar">
-                                    <button type="submit" class="btn btn-primary"><i class="fa fa-search"></i> Buscar</button>
+                                    <input type="text" v-model="search" @keyup.enter="listCategory(1, search, criteria)" class="form-control" placeholder="Texto a buscar">
+                                    <button type="submit" @click="listCategory(1, search, criteria)" class="btn btn-primary"><i class="fa fa-search"></i> Buscar</button>
                                 </div>
                             </div>
                         </div>
@@ -72,13 +72,13 @@
                         <nav>
                             <ul class="pagination">
                                 <li class="page-item" v-if="pagination.current_page > 1">
-                                    <a class="page-link" href="#" @click.prevent="changePage(pagination.current_page-1)">Ant</a>
+                                    <a class="page-link" href="#" @click.prevent="changePage(pagination.current_page-1, search, criteria)">Ant</a>
                                 </li>
                                 <li class="page-item" v-for="page in pageNumber" :key="page" :class="[page == isActived ? 'active' : '']">
-                                    <a class="page-link" href="#" @click.prevent="changePage(page)" v-text="page"></a>
+                                    <a class="page-link" href="#" @click.prevent="changePage(page, search, criteria)" v-text="page"></a>
                                 </li>
                                 <li class="page-item" v-if="pagination.current_page < pagination.last_page">
-                                    <a class="page-link" href="#" @click.prevent="changePage(pagination.current_page+1)">Sig</a>
+                                    <a class="page-link" href="#" @click.prevent="changePage(pagination.current_page+1, search, criteria)">Sig</a>
                                 </li>
                             </ul>
                         </nav>
@@ -153,7 +153,9 @@
                     'from': 0,
                     'to':0,
                 },
-                offset: 3
+                offset: 3,
+                criteria: 'name',
+                search: ''
             }
         },
         computed: {
@@ -185,9 +187,9 @@
             }
         },
         methods: {
-            listCategory(page) {
+            listCategory(page, search, criteria) {
                 let me = this;
-                var url = '/category?page=' + page;
+                var url = '/category?page=' + page + '&search=' + search + '&criteria=' + criteria;
                 axios.get(url).then(function(response) {
                     var r = response.data;
                     me.arrayCategory = r.categories.data;
@@ -197,11 +199,11 @@
                     console.log(error)
                 });
             },
-            changePage(page) {
+            changePage(page, search, criteria) {
                 let me = this;
                 // Update the current page
                 me.pagination.current_page = page;
-                me.listCategory(page);
+                me.listCategory(page, search, criteria);
             },
             registerCategory() {
                 if (this.validateCategory()) {
@@ -214,7 +216,7 @@
                     'description': this.description
                 }).then(function(response){
                     me.closeModal();
-                    me.listCategory();
+                    me.listCategory(1, '', 'name');
                 }).catch(function(error){
                     console.log(error)
                 })
@@ -231,7 +233,7 @@
                     'id': this.category_id
                 }).then(function(response){
                     me.closeModal();
-                    me.listCategory();
+                    me.listCategory(1, '', 'name');
                 }).catch(function(error){
                     console.log(error)
                 })
@@ -273,7 +275,7 @@
                     axios.put('/category/deactivate', {
                         'id': id
                     }).then(function(response){
-                        me.listCategory();
+                        me.listCategory(1, '', 'name');
 
                         swalWithBootstrapButtons.fire(
                         'Deleted!',
@@ -315,7 +317,7 @@
                     axios.put('/category/activate', {
                         'id': id
                     }).then(function(response){
-                        me.listCategory();
+                        me.listCategory(1, '', 'name');
 
                         swalWithBootstrapButtons.fire(
                         'Actived!',
@@ -368,7 +370,7 @@
             }
         },
         mounted() {
-            this.listCategory();
+            this.listCategory(1, this.search, this.criteria);
         }
     }
 </script>
